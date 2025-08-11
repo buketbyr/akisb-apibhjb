@@ -1,5 +1,4 @@
 import * as React from 'react';import dynamic from 'next/dynamic';const Form=dynamic(()=>import('@/components/Form'),{ssr:false});export default function NewPage(){return(<main className="space-y-4"><div className="rounded-2xl bg-white shadow-sm border border-gray-200 p-4"><h2 className="text-lg font-medium mb-1">Yeni Gözlem</h2><p className="text-sm text-gray-600">Kategori ve metni doldurup kaydedin.</p></div><Form/></main>);}
-// pages/new.tsx
 import * as React from "react";
 import dynamic from "next/dynamic";
 
