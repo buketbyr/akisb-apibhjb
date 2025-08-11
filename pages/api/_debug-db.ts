@@ -1,4 +1,6 @@
-export default function handler(_req, res) {
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+export default function handler(_req: NextApiRequest, res: NextApiResponse) {
   const raw = process.env.DATABASE_URL || "";
   try {
     const u = new URL(raw);
