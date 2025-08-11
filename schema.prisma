@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Observation {
+  id        Int      @id @default(autoincrement())
+  user      String   @default("B")
+  category  String
+  text      String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

@@ -1,0 +1,3 @@
+import * as React from 'react';
+import type { Observation } from '@prisma/client';
+export function ObservationCard({ obs }: { obs: Observation }) {const dt=new Date(obs.createdAt as unknown as string).toLocaleString('tr-TR',{dateStyle:'medium',timeStyle:'short'});return(<article className="rounded-2xl bg-white shadow-sm border border-gray-200 p-4 mb-3"><div className="flex items-start justify-between gap-3"><div className="flex-1"><div className="mb-2 text-xs text-gray-500">{dt}</div><p className="whitespace-pre-wrap text-sm leading-relaxed">{obs.text}</p></div><span className="ml-2 shrink-0 rounded-full border border-gray-300 px-2 py-1 text-xs">{obs.category}</span></div><div className="mt-2 text-xs text-gray-400">Kullanıcı: {obs.user}</div></article>);}
