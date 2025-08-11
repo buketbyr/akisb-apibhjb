@@ -1,1 +1,41 @@
-import * as React from 'react';import type { GetServerSideProps } from 'next';import type { Observation } from '@prisma/client';import { prisma } from '@/lib/prisma';import { ObservationCard } from '@/components/ObservationCard';type Props={observations:Observation[]};export default function Home({observations}:Props){return(<main>{observations.length===0?(<div className="rounded-2xl bg-white shadow-sm border border-gray-200 p-4">Henüz kayıt yok. İlk gözlemini <a className="underline" href="/new">buradan</a> ekle.</div>):(<div className="space-y-3">{observations.map(o=>(<ObservationCard key={o.id} obs={o}/>))}</div>)}</main>);}export const getServerSideProps:GetServerSideProps<Props>=async()=>{const observations=await prisma.observation.findMany({orderBy:{id:'desc'},take:100,});return{props:{observations}};};
+import * as React from 'react';
+import type { GetServerSideProps } from 'next';
+import { requirePrisma, hasDatabaseUrl } from '@/lib/prisma';
+
+type Observation = {
+  id: number; user: string; category: string; text: string; createdAt: string;
+};
+type Props = { items: Observation[]; dbReady: boolean };
+
+export const getServerSideProps: GetServerSideProps<Props> = async () => {
+  if (!hasDatabaseUrl) return { props: { items: [], dbReady: false } };
+  const prisma = requirePrisma();
+  const rows = await prisma.observation.findMany({ orderBy: { id: 'desc' }, take: 100 });
+  const items = rows.map(r => ({ ...r, createdAt: r.createdAt.toISOString() }));
+  return { props: { items, dbReady: true } };
+};
+
+export default function Home({ items, dbReady }: Props) {
+  return (
+    <main className="max-w-2xl mx-auto p-4 space-y-4">
+      <h1>Akış Bilinci</h1>
+      {!dbReady && (
+        <div className="rounded-xl border border-yellow-300 bg-yellow-50 text-yellow-900 p-3 text-sm">
+          Veritabanı bağlantısı ayarlı değil. Lütfen <code>DATABASE_URL</code> ekleyip redeploy et.
+        </div>
+      )}
+      <ul className="space-y-3">
+        {items.map(i => (
+          <li key={i.id} className="rounded-xl border p-3">
+            <div className="text-xs text-gray-500">
+              {i.user} · {i.category} · {new Date(i.createdAt).toLocaleString('tr-TR')}
+            </div>
+            <div>{i.text}</div>
+          </li>
+        ))}
+        {items.length === 0 && <li className="text-sm text-gray-500">Kayıt yok.</li>}
+      </ul>
+      <a href="/new" className="underline text-sm">Yeni</a> · <a href="/logs" className="underline text-sm">Kayıtlar</a>
+    </main>
+  );
+}
